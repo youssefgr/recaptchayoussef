@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>reCAPTCHA v3</title>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LfRUfwrAAAAANDXqp1T1YAN8UrwVggR9fcPeTWB"></script>
+    <script>
+        function executeRecaptcha() {
+            grecaptcha.ready(function () {
+                grecaptcha.execute("6LfRUfwrAAAAANDXqp1T1YAN8UrwVggR9fcPeTWB", {action: "submit"})
+                    .then(function (token) {
+                        // Check if Flutter bridge is available
+                        if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+                            window.flutter_inappwebview.callHandler("onTokenReceived", token);
+                        } else {
+                            console.error("Flutter WebView bridge not available");
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error("reCAPTCHA error:", error);
+                    });
+            });
+        }
+
+        // Wait for Flutter to signal it's ready
+        window.addEventListener('flutterInAppWebViewPlatformReady', function() {
+            executeRecaptcha();
+        });
+
+        // Fallback: try after a short delay if event doesn't fire
+        setTimeout(function() {
+            if (typeof grecaptcha !== 'undefined') {
+                executeRecaptcha();
+            }
+        }, 1000);
+    </script>
+</head>
+<body>
+<p>Loading reCAPTCHA...</p>
+</body>
+</html>
